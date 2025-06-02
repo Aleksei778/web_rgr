@@ -12,13 +12,8 @@ class PropertyRequest extends Model
     protected $table = 'property_requests';
 
     protected $fillable = [
-        'user_id', 'property_id', 'title', 'message', 'status', 'created_at', 'updated_at'
+        'user_id', 'property_id', 'title', 'message', 'status', 'admin_message', 'created_at', 'updated_at'
     ];
-
-    public function sendPropertyRequestNotification()
-        {
-            $this->notify(new NewPropertyRequestNotification($this));
-        }
 
     // Связь с пользователями
     public function user()

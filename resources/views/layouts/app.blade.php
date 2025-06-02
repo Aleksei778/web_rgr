@@ -57,7 +57,10 @@
                     @elseif (Route::currentRouteName() === 'login.form')
                         <a href="{{ route('register.form') }}" class="button signin-button">Регистрация</a>
                     @elseif (Route::currentRouteName() === 'profile')
-                        <a href="{{ route('logout') }}" class="button signin-button">Выйти</a>
+                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="button signin-button">Выйти</button>
+                        </form>
                     @else
                         @if (Auth::check())
                             <a href="{{ route('profile') }}" class="button profile-button"><i class="fas fa-user-circle"></i></a>

@@ -18,8 +18,8 @@
             <div class="news-item">
                 <h2 class="section-title">{!! $item->title !!}</h2>
                 <p>{!! $item->content !!}</p>
-                <small>Опубликовано: {{ $item->created_at->format('d.m.Y H:i') }}</small>
-                <small>Изменено: {{ $item->updated_at->format('d.m.Y H:i') }}</small>
+                <small>Опубликовано: <strong>{{ $item->created_at->format('d.m.Y H:i') }}</strong></small>
+                <small>Изменено: <strong>{{ $item->updated_at->format('d.m.Y H:i') }}</strong></small>
             </div>
             <hr>
         @endforeach

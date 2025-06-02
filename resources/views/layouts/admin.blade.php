@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="СтройИнвест - это компания по продаже недвижимости, которой можно доверять" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'СтройИнвест')</title>
 
     <link rel="stylesheet"
@@ -21,7 +22,7 @@
             'resources/css/auth.css', 
             'resources/css/property.css', 
             'resources/css/requests.css',
-            'resources/css/stylesprofile.css', 
+            'resources/css/stylesprofile.css',
             'resources/js/app.js'
         ])
     @else
@@ -51,14 +52,14 @@
                 <ul class="nav-menu">
                     <li><a href="{{ route('admin.main-page') }}">Главная</a></li>
                     <li><a href="{{ route('admin.news.index') }}">Новости</a></li>
-                    {{-- <li><a href="{{ route('admin.property') }}">Недвижимость</a></li>
-                    <li><a href="{{ route('admin.pages') }}">Страницы</a></li> --}}
+                    <li><a href="{{ route('admin.property') }}">Недвижимость</a></li>
+                    <li><a href="">Страницы</a></li>
                     <li><a href="{{ route('admin.property.requests') }}">Заявки пользователей</a></li>
                 </ul>
             </nav>
             <div class="header-right">
                 <div class="button-group">
-                    <a href="{{ route('profile') }}" class="button profile-button"><i class="fas fa-user-circle"></i> Admin</a>            
+                    <a href="{{ route('profile') }}" class="button profile-button"><i class="fas fa-user-circle"></i></a>            
                 </div>
             </div>
         </header>

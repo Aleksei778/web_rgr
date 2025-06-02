@@ -34,14 +34,18 @@
                         <li class="campaign-item">
                             <div class="campaign-info">
                                 <h5>{{ $req->title }}</h5>
-                                <p class="campaign-date">{{ $req->created_at->format('d.m.Y') }}</p>
+                                <p class="campaign-date">Была отправлена: <strong>{{ $req->created_at->format('d.m.Y') }}</strong></p>
                                 <p class="campaign-status">
-                                    <span class="status-badge status-{{ strtolower($req->status) }}">
-                                        {{ $req->status }}
-                                    </span>
+                                    @if ($req->status === 'sended')
+                                        <span class="status-badge sended"><strong>⏲️ Рассматривается</strong></span>
+                                    @elseif($req->status === 'accepted')
+                                        <span class="status-badge accepted"><strong>✅ Одобрена</strong></span>
+                                    @elseif($req->status === 'rejected')
+                                        <span class="status-badge rejected"><strong>❌ Отклонена</strong></span>
+                                    @endif
                                 </p>
                                 <div class="campaign-message">
-                                    <p>{{ $req->message }}</p>
+                                    <p>Ваше сообщение: <strong>{{ $req->message }}</strong></p>
                                 </div>
                             </div>
                         </li>
@@ -49,7 +53,7 @@
 
                 
                     <div class="pagination-container">
-                        {{ $requests->links() }}
+                        {{ $requests->links('pagination::bootstrap-4') }}
                     </div>
                 </ul>
             @else

@@ -46,7 +46,13 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     })->name('main-page');
 
     Route::resource('news', Admin\AdminNewsController::class);
-    Route::get('/property', [Admin\AdminPropertyController::class, ''])->name('property');
+    
+    Route::get('/property', [Admin\AdminPropertyController::class, 'index'])->name('property');
+    Route::post('/property', [Admin\AdminPropertyController::class, 'store'])->name('property.create');
+
     Route::get('/pages', [Admin\AdminPropertyController::class, 'getPages'])->name('pages');
+
     Route::get('/property-requests', [Admin\AdminPropertyRequestController::class,'index'])->name('property.requests');
+    Route::post('/property-requests/{id}/accept', [Admin\AdminPropertyRequestController::class, 'acceptRequest'])->name('property.accept');
+    Route::post('/property-requests/{id}/reject', [Admin\AdminPropertyRequestController::class, 'rejectRequest'])->name('property.reject');
 });
