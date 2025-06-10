@@ -39,33 +39,40 @@
             <a href="/" aria-label="stroiinvest.com">
                 <img src="{{ asset('svg/logo-stroi.svg') }}" alt="StroiInvest Логотип" class="logo" loading="eager" />
             </a>
-            <p class="logo-phrase">СтройИнвест</p>
+            <a href="{{ route('locale') }}" 
+            class="language-toggle" 
+            aria-label="Toggle language between Russian and English">
+                <i class="fas fa-globe" aria-hidden="true"></i>
+                <span data-ru="EN" data-en="RU">
+                    {{ app()->getLocale() === 'ru' ? 'EN' : 'RU' }}
+                </span>
+            </a>
             <nav>
                 <ul class="nav-menu">
-                    <li><a href="/">Главная</a></li>
-                    <li><a href="/news">Новости</a></li>
-                    <li><a href="/about">О компании</a></li>
-                    <li><a href="/property">Недвижимость</a></li>
-                    <li><a href="/location-map">Схема проезда</a></li>
-                    <li><a href="/site-map">Карта сайта</a></li>
+                    <li><a href="/">{{ __('menu.main') }}</a></li>
+                    <li><a href="/news">{{ __('menu.news') }}</a></li>
+                    <li><a href="/about">{{ __('menu.about') }}</a></li>
+                    <li><a href="/property">{{ __('menu.property') }}</a></li>
+                    <li><a href="/location-map">{{ __('menu.driving') }}</a></li>
+                    <li><a href="/site-map">{{ __('menu.site_map') }}</a></li>
                 </ul>
             </nav>
             <div class="header-right">
                 <div class="button-group">
                     @if (Route::currentRouteName() === 'register.form')
-                        <a href="{{ route('login.form') }}" class="button signin-button">Войти</a>
+                        <a href="{{ route('login.form') }}" class="button signin-button">{{ __('menu.login') }}</a>
                     @elseif (Route::currentRouteName() === 'login.form')
-                        <a href="{{ route('register.form') }}" class="button signin-button">Регистрация</a>
+                        <a href="{{ route('register.form') }}" class="button signin-button">{{ __('menu.register') }}</a>
                     @elseif (Route::currentRouteName() === 'profile')
                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                             @csrf
-                            <button type="submit" class="button signin-button">Выйти</button>
+                            <button type="submit" class="button signin-button">{ __('menu.logout') }}</button>
                         </form>
                     @else
                         @if (Auth::check())
                             <a href="{{ route('profile') }}" class="button profile-button"><i class="fas fa-user-circle"></i></a>
                         @else
-                            <a href="{{ route('login.form') }}" class="button signin-button">Войти / Регистрация</a>
+                            <a href="{{ route('login.form') }}" class="button signin-button">{{ __('menu.login') }} / {{ __('menu.register') }}</a>
                         @endif
                     @endif                
                 </div>

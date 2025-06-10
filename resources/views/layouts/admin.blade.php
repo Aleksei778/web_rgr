@@ -47,13 +47,20 @@
             <a href="/" aria-label="stroiinvest.com">
                 <img src="{{ asset('svg/logo-stroi.svg') }}" alt="StroiInvest Логотип" class="logo" loading="eager" />
             </a>
-            <p class="logo-phrase">СтройИнвест</p>
+            <a href="{{ route('locale') }}" 
+            class="language-toggle" 
+            aria-label="Toggle language between Russian and English">
+                <i class="fas fa-globe" aria-hidden="true"></i>
+                <span data-ru="EN" data-en="RU">
+                    {{ app()->getLocale()  }}
+                </span>
+            </a>
             <nav>
                 <ul class="nav-menu">
                     <li><a href="{{ route('admin.main-page') }}">Главная</a></li>
                     <li><a href="{{ route('admin.news.index') }}">Новости</a></li>
-                    <li><a href="{{ route('admin.property') }}">Недвижимость</a></li>
-                    <li><a href="">Страницы</a></li>
+                    <li><a href="{{ route('admin.property.index') }}">Недвижимость</a></li>
+                    <li><a href="{{ route('admin.pages.index') }}">Страницы</a></li>
                     <li><a href="{{ route('admin.property.requests') }}">Заявки пользователей</a></li>
                 </ul>
             </nav>

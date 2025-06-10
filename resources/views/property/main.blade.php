@@ -5,7 +5,7 @@
 @section('content')
     <section class="section-single">
         <h1 data-ru="Наша недвижимость" data-en="Our property">
-            Наша недвижимость
+            {{ __('property.title') }}
         </h1>
         
         <!-- Filter buttons -->
@@ -51,7 +51,7 @@
                                             <div class="property-address">{{ $property->address }}</div>
                                             <div class="property-details">{{ $property->description }}</div>
                                             <div class="property-price">{{ number_format($property->price, 2) }} ₽</div>
-                                            <a class="request-btn" href="{{ route('property.form', ['property_id' => $property->id]) }}">Оставить заявку</a>
+                                            <a class="request-btn" href="{{ route('property.form', ['property_id' => $property->id]) }}">{{ __('property.req') }}</a>
                                         </div>
                                     </div>
                             @endforeach

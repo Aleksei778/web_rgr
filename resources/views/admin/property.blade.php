@@ -5,7 +5,7 @@
 @section('content')
     <section class="section-single">
         <h1 data-ru="Наша недвижимость" data-en="Our property">
-            Наша недвижимость
+            {{ __('property.title') }}
         </h1>
         
         <!-- Filter buttons -->
@@ -24,14 +24,13 @@
             <!-- Display subcategories and their properties -->
             @if($category->child->isNotEmpty())
                 @foreach($category->child as $subcategory)
-                    <div class="news-item">
-                        <h3 class="subcategory-title">{{ $subcategory->name }}</h3><br>
-                    </div>
-                    @if($subcategory->properties->isNotEmpty())
-                        <div class="properties-list" style="margin-left: 20px;">
-                            @foreach($subcategory->properties as $property)
-                                <div class="properties-container">
-                                    <!-- Карточка недвижимости -->
+                    <div class="subcategory-section">
+                        <div class="news-item">
+                            <h3 class="subcategory-title">{{ $subcategory->name }}</h3><br>
+                        </div>
+                        @if($subcategory->properties->isNotEmpty())
+                            <div class="properties-grid">
+                                @foreach($subcategory->properties as $property)
                                     <div class="property-card">
                                         <div class="property-image-container">
                                             <!-- Swiper для слайдшоу -->
@@ -53,15 +52,16 @@
                                             <div class="property-price">{{ number_format($property->price, 2) }} ₽</div>
                                             <a class="request-btn" href="{{ route('property.form', ['property_id' => $property->id]) }}">Оставить заявку</a>
                                         </div>
-                                        <form action="{{ route('admin.property.destroy', $item) }}" method="POST" class="d-inline">
+                                        <form action="{{ route('admin.property.destroy', $property) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="button signin-button" style="margin-bottom: 20px; margin-top: 20px;" onclick="return confirm('Вы уверены?')">Удалить</button>
+                                            <button type="submit" class="button signin-button delete-btn" onclick="return confirm('Вы уверены?')">Удалить</button>
                                         </form>
                                     </div>
-                            @endforeach
-                        </div>
-                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 @endforeach
             @endif
         </section>
@@ -74,7 +74,7 @@
 
         <div class="info-container">
             <div class="contact-form">
-                <form method="POST" action="{{ route('admin.property.create') }}" class="auth-form">
+                <form method="POST" action="{{ route('admin.property.store') }}" class="auth-form" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="longitude" id="longitude" value="">
                     <input type="hidden" name="latitude" id="latitude" value="">
@@ -86,20 +86,25 @@
                     <input type="text" id="address" name="address" placeholder="Введите адрес">
                     <div id="suggestions" class="suggestions"></div>
                     
-                    <label for="photos">Фотографии</label>
-                    <input type="file" 
-                        name="photos[]" 
-                        id="photos" 
-                        multiple 
-                        accept="image/*" 
-                        required>
-                    
+                    <label for="photos">Фотографии (минимум 2)</label>
+                    <div class="file-upload-container">
+                        <input type="file" 
+                            name="photos[]" 
+                            id="photos" 
+                            accept="image/*" 
+                            multiple
+                            required>
+                        <div id="file-preview" class="file-preview"></div>
+                        <div id="file-count" class="file-count">Файлы не выбраны</div>
+                    </div>
+                                    
                     <label for="description">Описание</label>
-                    <textarea name="description" id="description" placeholder="Введите описание квартиры"></textarea>
+                    <textarea name="description" id="description" placeholder="Введite описание квартиры"></textarea>
                     
                     <label for="price">Цена</label>
                     <input 
                         type="number" 
+                        id="price"
                         name="price" 
                         step="0.01" 
                         min="0" 
@@ -153,14 +158,14 @@
                 const swiper = new Swiper(slider, {
                     loop: true,
                     autoplay: {
-                        delay: 3000, // увеличил задержку для лучшего восприятия
+                        delay: 3000,
                         disableOnInteraction: false,
                     },
                     pagination: {
-                        el: slider.querySelector('.swiper-pagination'), // ищем пагинацию внутри конкретного слайдера
-                        clickable: true, // разрешил клики для удобства
+                        el: slider.querySelector('.swiper-pagination'),
+                        clickable: true,
                     },
-                    allowTouchMove: true, // разрешил свайпы для мобильных устройств
+                    allowTouchMove: true,
                     slidesPerView: 1,
                     spaceBetween: 0,
                 });
@@ -168,6 +173,41 @@
                 swiperInstances.push(swiper);
             });
         }
+
+        // Обработка множественной загрузки файлов
+        const fileInput = document.getElementById('photos');
+        const filePreview = document.getElementById('file-preview');
+        const fileCount = document.getElementById('file-count');
+
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            // Очищаем предыдущий предварительный просмотр
+            filePreview.innerHTML = '';
+            
+            if (files.length === 0) {
+                fileCount.textContent = 'Файлы не выбраны';
+                return;
+            }
+            
+            fileCount.textContent = `Выбрано файлов: ${files.length}`;
+            
+            files.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <span class="file-name">${file.name}</span>
+                        `;
+                        filePreview.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
 
         // Фильтрация категорий
         const filterButtons = document.querySelectorAll('.filter-btn');
@@ -208,7 +248,7 @@
     });
 </script>
 
-<script src="https://api-maps.yandex.ru/2.1/?suggest_apikey=09b9e539-de9d-4b8b-9591-1f57ed3d0e06&lang=ru_RU" type="text/javascript"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=eaa2acca-c4a1-45de-a856-c8eb87ff74a4&lang=ru_RU&suggest_apikey=09b9e539-de9d-4b8b-9591-1f57ed3d0e06" type="text/javascript"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         ymaps.ready(init);
@@ -220,9 +260,11 @@
                 const selectedItem = e.get('item');
                 const selectedText = selectedItem.value;
 
-                ymaps.geocode().then(function (res) {
+                ymaps.geocode(selectedText).then(function (res) {
                     const firstGeoObject = res.geoObjects.get(0);
                     const coords = firstGeoObject.geometry.getCoordinates();
+
+                    console.log(coords);
 
                     document.getElementById('longitude').value = coords[0].toFixed(6);
                     document.getElementById('latitude').value = coords[1].toFixed(6);
@@ -259,6 +301,189 @@
         background-color: #007bff;
         color: white;
         border-color: #0069d9;
+    }
+
+    /* Сетка для размещения 3 карточек в ряд */
+    .properties-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+        max-width: 100%;
+    }
+
+    /* На больших экранах принудительно показываем максимум 3 колонки */
+    @media (min-width: 1200px) {
+        .properties-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* На средних экранах - 2 колонки */
+    @media (max-width: 1199px) and (min-width: 768px) {
+        .properties-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* На маленьких экранах - 1 колонка */
+    @media (max-width: 767px) {
+        .properties-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .property-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .property-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .property-image-container {
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .property-slider img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .property-info {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .property-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .property-address {
+        color: #666;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .property-details {
+        color: #777;
+        margin-bottom: 10px;
+        font-size: 14px;
+        flex-grow: 1;
+    }
+
+    .property-price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+
+    .request-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        text-align: center;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+    }
+
+    .request-btn:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        color: white;
+    }
+
+    .delete-btn {
+        margin-bottom: 20px !important;
+        margin-top: 10px !important;
+        width: 100%;
+    }
+
+    /* Стили для подкатегорий - каждая с новой строки */
+    .subcategory-section {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .subcategory-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    /* Стили для загрузки файлов */
+    .file-upload-container {
+        margin: 10px 0;
+    }
+
+    .file-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .preview-item {
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        background: #f9f9f9;
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 5px;
+    }
+
+    .file-name {
+        font-size: 12px;
+        color: #666;
+        word-break: break-word;
+    }
+
+    .file-count {
+        font-size: 14px;
+        color: #007bff;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    /* Улучшение отображения на мобильных устройствах */
+    @media (max-width: 480px) {
+        .property-card {
+            margin-bottom: 15px;
+        }
+        
+        .properties-grid {
+            gap: 15px;
+        }
+        
+        .file-preview {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 </style>
 @endsection

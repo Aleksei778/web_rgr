@@ -9,7 +9,7 @@ class Property extends Model
     protected $table = 'properties';
 
     protected $fillable = [
-        'category_id', 'title', 'description', 'price', 'address', 'latitude', 'longitude'
+        'category_id', 'title', 'description', 'price', 'address', 'latitude', 'longitude', 'is_active'
     ];
 
     // Связь с категорией

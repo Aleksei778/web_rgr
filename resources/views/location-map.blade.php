@@ -6,12 +6,12 @@
     <section class='section-single'>
         <h1 data-ru="Схема проезда"
             data-en="Latest news from the real estate world">
-            Схема проезда
+            {{ __('dir.schema') }}
         </h1>
         <p>
-            Наши офисы:<br>
-            Москва, Пресненская набережная, д. 12, Башня "Федерация-Восток" (Москва-Сити)<br>
-            Москва, Ленинградский проспект, д. 36, стр. 11
+            {{ __('dir.offices') }}:<br>
+            {{ __('dir.first_office') }}<br>
+            {{ __('dir.second_office') }}
         </p>
     </section>
 

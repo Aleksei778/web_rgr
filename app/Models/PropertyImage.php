@@ -9,7 +9,7 @@ class PropertyImage extends Model
     protected $table = 'property_images';
 
     protected $fillable = [
-        'property_id', 'image_path', 'is_main'
+        'property_id', 'image_path'
     ];
 
     // Связь с недвижимостью

@@ -7,6 +7,7 @@ use App\Models\Property;
 use App\Models\PropertyCategory;
 use App\Models\PropertyImage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AdminPropertyController extends AdminController
 {
@@ -18,7 +19,11 @@ class AdminPropertyController extends AdminController
         return view('admin.property', compact('properties', 'categories'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request) 
+    {
+        // Add logging to see what data is being received
+        Log::info('Store method called', $request->all());
+        
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'address' => 'required|string|max:500',
@@ -26,56 +31,71 @@ class AdminPropertyController extends AdminController
             'latitude' => 'nullable|numeric|between:-90,90',
             'description' => 'nullable|string|max:2000',
             'price' => 'required|numeric|min:0|max:99999999.99',
-            'photos' => 'required|array|min:2',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'category_select' => 'required|exists:property_categories,id', // Add this validation
         ], [
             'title.required' => 'Заголовок обязателен для заполнения',
             'address.required' => 'Адрес обязателен для заполнения',
             'price.required' => 'Цена обязательна для заполнения',
             'price.numeric' => 'Цена должна быть числом',
             'price.min' => 'Цена не может быть отрицательной',
-            'photos.required' => 'Необходимо загрузить фотографии',
-            'photos.min' => 'Минимум 2 фотографии',
-            'photos.*.image' => 'Файл должен быть изображением',
-            'photos.*.max' => 'Размер изображения не должен превышать 2MB'
+            'category_select.required' => 'Категория обязательна для выбора',
+            'category_select.exists' => 'Выбранная категория не существует',
         ]);
-
+    
         if ($validator->fails()) {
+            Log::error("Validation failed", $validator->errors()->toArray());
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+    
         try {
             $categoryId = $request->input('category_select');
-
+            Log::info('Category ID: ' . $categoryId);
+    
+            // Check if Property model has fillable fields
             $property = Property::create([
                 'title' => $request->title,
                 'address' => $request->address,
-                'longitude' => $request->longitude,
-                'latitude' => $request->latitude,
+                'longitude' => $request->longitude ?: null,
+                'latitude' => $request->latitude ?: null,
+                'description' => $request->description,
                 'price' => $request->price,
                 'category_id' => $categoryId,
+                'is_active' => true,
             ]);
+            
+            Log::info('Property created with ID: ' . $property->id);
             
             if ($request->hasFile('photos')) {
                 $i = 1;
-
+    
                 foreach ($request->file('photos') as $photo) {
-                    $customFilename = "{$i}.jpg";
+                    $extension = $photo->getClientOriginalExtension();
+                    $customFilename = "{$i}.{$extension}";
+                    
                     $path = $photo->storeAs("properties/{$property->id}", $customFilename, 'public');
                     
-                    $photo_image = PropertyImage::create([
+                    // Check the correct column name in PropertyImage model
+                    PropertyImage::create([
                         'property_id' => $property->id,
-                        'path' => $path
+                        'image_path' => $path,
                     ]);
-
+    
                     $i++;
                 }
             }
-
+    
+            Log::info('Property and images saved successfully');
+            
             return redirect()->back()
                 ->with('success','Недвижимость успешно сохранена');
+                
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors($e)->withInput();
+            Log::error('Error in store method: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->withErrors(['error' => 'Произошла ошибка при сохранении: ' . $e->getMessage()])
+                ->withInput();
         }
     }
 

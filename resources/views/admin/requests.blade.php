@@ -5,18 +5,18 @@
 @section('content')
     <section class="contactform-section">
         <h2>
-            Заявки
+            {{ __('admin_requests.requests') }}
         </h2>
         <table class="req_table">
             <thead>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">ID заявки</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'users.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">ID пользователя</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'users.last_name', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">ФИО пользователя</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.message', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Сообщение</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'properties.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">ID недвижимости</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'properties.address', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Адрес недвижимости</a></th>
-                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.created_at', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Дата создания</a></th>
-                <th>Действия по заявке</th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.req_id') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'users.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.user_id') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'users.last_name', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.user_name') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.message', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.message') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'properties.id', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.property_id') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'properties.address', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.property_address') }}</a></th>
+                <th><a href="{{ route('admin.property.requests', ['sort_by' => 'property_requests.created_at', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">{{ __('admin_requests.created_at') }}</a></th>
+                <th>{{ __('admin_requests.action') }}</th>
             </thead>
             <tbody>
                 @foreach ($propRequests as $r)
@@ -33,15 +33,15 @@
                             @if($r->status === 'sended')
                                 <button type="button"
                                 class="accept-btn"
-                                onclick="acceptRequest({{ $r->id }})">Одобрить</button>
+                                onclick="acceptRequest({{ $r->id }})">{{ __('admin_requests.accept') }}</button>
 
                                 <button type="button"
                                 class="reject-btn"
-                                onclick="rejectRequest({{ $r->id }})">Отклонить</button>
+                                onclick="rejectRequest({{ $r->id }})">{{ __('admin_requests.reject') }}</button>
                             @elseif($r->status === 'accepted')
-                            <span class="status-badge accepted">✅ Одобрена</span>
+                            <span class="status-badge accepted">✅ {{ __('admin_requests.accepted') }}</span>
                             @elseif($r->status === 'rejected')
-                            <span class="status-badge rejected">❌ Отклонена</span>
+                            <span class="status-badge rejected">❌ {{ __('admin_requests.rejected') }}</span>
                             @endif
                         </td>
                     </tr>
